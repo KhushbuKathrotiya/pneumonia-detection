@@ -11,3 +11,9 @@ Step 2: Run hello.py file -> shows interfece as below
 
 
 Step 3: Upload any.dicom file, preprocess your image as needed, and pass the image to the predtct function, in which we already loaded the model using the torch.jit.load function. Then the model predicts the probability: if the probability is less than 0.5, it predicts "no pneumonia"; otherwise, it shows "pneumonia detected with probability".
+
+  case 1:
+<img width="1440" alt="Screenshot 2023-11-18 at 3 17 02 PM" src="https://github.com/KhushbuKathrotiya/pneumonia-detection/assets/63412542/2ad1d7ca-0f9b-4027-85e8-bb3bdc025e11">
+
+  case 2:
+<img width="1440" alt="Screenshot 2023-11-18 at 3 16 48 PM" src="https://github.com/KhushbuKathrotiya/pneumonia-detection/assets/63412542/b47e0537-6db3-480a-b382-5f79fe62be87">
