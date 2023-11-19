@@ -5,6 +5,6 @@ This Streamlit code defines a web application for RSNA pneumonia detection. It u
 
 Step 1: Run the command pip install -t requirement.txt, which installs all the required libraries.
 
-step 2) Run hello.py file -> shows interfece 
+Step 2: Run hello.py file -> shows interfece 
 
-step 3: Upload any .dicom file, preprocess your image as needed, and pass the image to the predtct function, in which we already loaded the model using torch.jit.load function. Then the model predicts the probability -> if probability is less than 0.5 it predict "No Pneumonia" else it shows "Pneumonia detected with probability".
+Step 3: Upload any.dicom file, preprocess your image as needed, and pass the image to the predtct function, in which we already loaded the model using the torch.jit.load function. Then the model predicts the probability: if the probability is less than 0.5, it predicts "no pneumonia"; otherwise, it shows "pneumonia detected with probability".
