@@ -14,38 +14,66 @@
 
 import streamlit as st
 from streamlit.logger import get_logger
+import torch
+import pydicom
+import numpy as np
+from PIL import Image
+from torchvision import transforms
 
 LOGGER = get_logger(__name__)
 
 
-def run():
-    st.set_page_config(
-        page_title="Hello",
-        page_icon="👋",
-    )
+def load_and_preprocess_dcm(file):
+    # dcm = pydicom.dcmread(file)
+    # image = dcm.pixel_array.astype(np.float32)
+    dcm = pydicom.read_file(file).pixel_array
+    # dcm_array = cv2.resize(dcm, (224, 224)).astype(np.float16)
+    resized_image = Image.fromarray(dcm / 255).resize((224, 224))
+    display = Image.fromarray(dcm)
+    display = display.convert("L")
+    
+    # Preprocess your image as needed (e.g., resizing, normalization)
+    # For simplicity, let's assume a model that takes a fixed-size input
+    # and normalizes pixel values to the range [0, 1].
+    preprocess = transforms.Compose([
+    transforms.ToTensor(),
+    transforms.Normalize(0.49, 0.248)])
+    img = preprocess(resized_image)
+    # img = np.expand_dims(img, axis=0)
+    return np.expand_dims(img, axis=0), display
 
-    st.write("# Welcome to Streamlit! 👋")
+# Function to load your pre-trained model and make predictions
+def predict(image):
+    # Load your pre-trained model here
+    # Replace the following line with your actual model loading code
+    device = torch.device("cpu")
+    model = torch.jit.load('model_scripted.pt').to(device)
+    model.eval()
+    # st.write("Model loaded...")
+    with torch.no_grad():
+        data = torch.from_numpy(image)
+        pred_prob = torch.sigmoid(model(data)[0].cpu())
 
-    st.sidebar.success("Select a demo above.")
+    return pred_prob
 
-    st.markdown(
-        """
-        Streamlit is an open-source app framework built specifically for
-        Machine Learning and Data Science projects.
-        **👈 Select a demo from the sidebar** to see some examples
-        of what Streamlit can do!
-        ### Want to learn more?
-        - Check out [streamlit.io](https://streamlit.io)
-        - Jump into our [documentation](https://docs.streamlit.io)
-        - Ask a question in our [community
-          forums](https://discuss.streamlit.io)
-        ### See more complex demos
-        - Use a neural net to [analyze the Udacity Self-driving Car Image
-          Dataset](https://github.com/streamlit/demo-self-driving)
-        - Explore a [New York City rideshare dataset](https://github.com/streamlit/demo-uber-nyc-pickups)
-    """
-    )
+def main():
+    st.title("RSNA Pneumonia Detection")
 
+    uploaded_file = st.file_uploader("Choose a DICOM file", type=["dcm"])
+
+    if uploaded_file is not None:
+        # st.image(uploaded_file)
+
+        # Process the DICOM image
+        processed_image, display = load_and_preprocess_dcm(uploaded_file)
+
+        # Make predictions
+        prediction = predict(processed_image)
+        if prediction<0.5:
+            st.write("Prediction: No Pneumonia")
+        else:
+            st.write("Pneumonia detected with <b>"+str(round(prediction.item(), 4))+"</b> probabilty.", unsafe_allow_html=True)  # Display the prediction result
+        st.image(display, caption='DICOM Image uploaded', use_column_width=True)
 
 if __name__ == "__main__":
-    run()
+    main()
