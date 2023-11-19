@@ -1,4 +1,4 @@
-# Pneumonia Detection GUI using Streamlit
+# Pneumonia Detection on Chest RadioGraph Using Streamlit
 
 This Streamlit code defines a web application for RSNA Pneumonia Detection.It uses the Streamlit library to create a user interface.It serves as an easily deployable web interface to upload DICOM files, preprocess the images, and make predictions using a pre-trained model
 
